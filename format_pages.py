@@ -20,7 +20,7 @@ FOOTER_HEIGHT = int(FOOTER_HEIGHT_INCHES * DEFAULT_DPI)
 TOTAL_HEIGHT = int(TOTAL_HEIGHT_INCHES * DEFAULT_DPI)
 PADDING = int(PADDING_INCHES * DEFAULT_DPI)
 
-FILE_REGEX = r"^(\d+)_(?P<author>.*).png$"
+FILE_REGEX = r"^(\d+)_(?P<author>.*)\.(?P<extension>png|jpeg|jpg)$"
 
 
 class Style(Enum):
