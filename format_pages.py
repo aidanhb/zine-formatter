@@ -31,9 +31,9 @@ class Style(Enum):
 
 class Helvetica:
     ttf = {
-        Style.REGULAR: "helvetica.ttf",
-        Style.BOLD: "helvetica_bold.ttf",
-        Style.ITALIC: "helvetica_italic.ttf",
+        Style.REGULAR: "assets/helvetica.ttf",
+        Style.BOLD: "assets/helvetica_bold.ttf",
+        Style.ITALIC: "assets/helvetica_italic.ttf",
     }
 
     def __init__(self, style: Style, size: int):
@@ -120,10 +120,10 @@ def layout_spread(img_files, spread, offset, file_format=None):
 
 def main(argv):
     parser = argparse.ArgumentParser()
-    parser.add_argument("--images", "-i", type=str)
-    parser.add_argument("--outdir", "-o", type=str)
-    parser.add_argument("--offset", "-n", type=int, default=0)
-    parser.add_argument("--file_format", "-f", type=str, default=None)
+    parser.add_argument("-i", "--images", type=str, help="Folder containing input images.")
+    parser.add_argument("-o", "--outdir", type=str, help="Folder to dump resulting files into.")
+    parser.add_argument("-n", "--offset", type=int, default=0, help="Page number for first page in layout.")
+    parser.add_argument("-f", "--file_format", type=str, default=None, help="File format for page PNGs. Must contain '{}' for page key.")
 
     namespace = parser.parse_args(sys.argv[1:])
     img_files = []
@@ -141,12 +141,19 @@ def main(argv):
         back = [layout_spread(img_files, spread, offset, file_format) for spread in sheet.back]
         sheet_img_spreads.append(Sheet(front=front, back=back))
 
+    sheets = []
     for sheetno, (front, back) in enumerate(sheet_img_spreads):
         # for 
         front_img = create_sheet(front, int(8.5 * DEFAULT_DPI), int(11 * DEFAULT_DPI))
         back_img = create_sheet(back, int(8.5 * DEFAULT_DPI), int(11 * DEFAULT_DPI))
-        front_img.save(os.path.join(namespace.outdir, f"sheet{sheetno}_front.pdf"))
-        back_img.save(os.path.join(namespace.outdir, f"sheet{sheetno}_back.pdf"))
+        sheets += [front_img, back_img]
+
+    if sheets:
+        sheets[0].save(os.path.join(namespace.outdir, "sheets.pdf"))
+        for sheet in sheets[1:]:
+            sheet.save(os.path.join(namespace.outdir, "sheets.pdf"), append=True)
+    else:
+        print("No sheet PDF generated...")
         
 
 if __name__ == "__main__":
