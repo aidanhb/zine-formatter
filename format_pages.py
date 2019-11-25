@@ -148,10 +148,20 @@ def main(argv):
         back_img = create_sheet(back, int(8.5 * DEFAULT_DPI), int(11 * DEFAULT_DPI))
         sheets += [front_img, back_img]
 
+    # newSheets= []
+    # for sheet in sheets:
+
     if sheets:
-        sheets[0].save(os.path.join(namespace.outdir, "sheets.pdf"))
+        # Adding ticks for cutting in two
+        sheet = sheets[0]
+        draw = ImageDraw.Draw(sheets[0])
+        y = 5.5
+        for x1, x2 in ((0, 0.25), (8.25, 8.5)):
+            draw.line([(x1 * DEFAULT_DPI, y * DEFAULT_DPI), (x2 * DEFAULT_DPI, y * DEFAULT_DPI)], fill=128)
+
+        sheets[0].save(os.path.join(namespace.outdir, "sheets.pdf"), resolution=DEFAULT_DPI)
         for sheet in sheets[1:]:
-            sheet.save(os.path.join(namespace.outdir, "sheets.pdf"), append=True)
+            sheet.save(os.path.join(namespace.outdir, "sheets.pdf"), resolution=DEFAULT_DPI, append=True)
     else:
         print("No sheet PDF generated...")
         
