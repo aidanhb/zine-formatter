@@ -61,15 +61,19 @@ def left_align(image, text: str, style: Style, size: int, left_padding: int, bot
 def layout_page(image_path, page, left_page, file_format=None, width=WIDTH, height=TOTAL_HEIGHT, footer_height=FOOTER_HEIGHT, padding=PADDING):
     match = re.match(FILE_REGEX, os.path.basename(image_path))
     author = match.group("author")
-    body_height = height - footer_height
+    body_height = height
 
     img = Image.new("RGB", (width, height), color = (255, 255, 255))
+    page_string = str(page) if page > 0 else ""
     if left_page:
-        left_align(img, str(page), Style.BOLD, 48, padding, padding)
+        left_align(img, page_string, Style.BOLD, 48, padding, padding)
         right_align(img, author, Style.ITALIC, 48, padding, padding)
     else:
-        right_align(img, str(page), Style.BOLD, 48, padding, padding)
+        right_align(img, page_string, Style.BOLD, 48, padding, padding)
         left_align(img, author, Style.ITALIC, 48, padding, padding)
+
+    if page_string or author:
+        body_height -= footer_height
 
     content = Image.open(image_path)
     cw, ch = content.size
